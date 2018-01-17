@@ -6,12 +6,11 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdint.h>
 /**
  * Linux C socket
- *@author Lian
  */
-#include <stdint.h>
-
+#define MYPORT 8887
 /*typedef struct{
     uint8_t lxx;
     int nodeID;
@@ -24,14 +23,23 @@
 typedef struct{
     uint8_t id;
     int type;
-    uint8_t level;
-    uint32_t source;
+    int level;
+    int source;
     float value;
 } test_stru,*p_stru;
 
-int main(){
+int main(int argc, char *argv[])
+    {
     //test_stru test1 = {200,121,127,4,4294967279,5648.525};
-    test_stru test1 = {12,1,2,234,5648.525};
+    if(argc != 2)
+    {
+	printf("Args Error. Usage: ./sensor <server_ip>");
+	exit(1);
+    }
+    enum dataType {Usage = 1, TEMPERATURE, PRESSURE, HUMIDITY}dataType;
+    enum dataLevel {URGENT = 1, NORMAL, NONURGENT};
+    //int type = (enum dataType)type;
+    test_stru test1 = {12,Usage,NONURGENT,234,5648.525};
     printf("test_stru size is  %ld\n",sizeof(test_stru));
     p_stru p_test = &test1;
     size_t inlen = sizeof(test_stru);
@@ -47,15 +55,15 @@ int main(){
     struct sockaddr_in theirAddr;
     memset(&theirAddr,0,sizeof(struct sockaddr_in));
     theirAddr.sin_family =AF_INET;
-    theirAddr.sin_addr.s_addr =inet_addr("192.168.245.230");
-    theirAddr.sin_port = htons(8887);
+    theirAddr.sin_addr.s_addr =inet_addr(argv[1]);
+    theirAddr.sin_port = htons(MYPORT);
     int sendBytes;
     while(1){
         if((sendBytes=sendto(brdcFd,p_test,sizeof(test_stru),0,(struct sockaddr *)&theirAddr,sizeof(struct sockaddr)))==-1){
             printf("sendto fail,errno=%d\n",errno);
             return -1;
         }
-        printf("send success!!!\n");
+        printf("sending successfully!!!\n");
         //printf("msg=%s,msgLen=%d,sendBytes=%d\n",msg,(int)strlen(msg),sendBytes);
         sleep(2);
     }
