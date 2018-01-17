@@ -40,13 +40,14 @@ public class MAC_struct{
             //uint8_t level
             /*nodeID = inputStream.readInt();
             System.out.println("nodeID= "+int_EndianBigtoLittle(nodeID));*/
-            int level = inputStream.readUnsignedByte();//read 2 unsigned bytes
-            parseResult.add(level);
+            //int level = inputStream.readUnsignedByte();//read 2 unsigned bytes
+            int level = inputStream.readInt();
+            parseResult.add(int_EndianBigtoLittle(level));
             //System.out.println("level= "+level);
-            inputStream.skipBytes(3);
+            //inputStream.skipBytes(3);
             //uint32_t source
             int source = inputStream.readInt();
-            parseResult.add(Long_EndianBigtoLittle(source));
+            parseResult.add(int_EndianBigtoLittle(source));
             //System.out.println("source= "+Long_EndianBigtoLittle(source));
             //float value
             for(int i=0;i<4;i++)
